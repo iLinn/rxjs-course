@@ -1,8 +1,12 @@
 {
+  "extends": [
+    "tslint:recommended"
+  ],
   "rulesDirectory": [
     "node_modules/codelyzer"
   ],
   "rules": {
+    "ordered-imports": true,
     "arrow-return-shorthand": true,
     "callable-types": true,
     "class-name": true,
@@ -23,9 +27,11 @@
     "import-spacing": true,
     "indent": [
       true,
-      "spaces"
+      "spaces",
+      2
     ],
     "interface-over-type-literal": true,
+    "jsdoc-format": true,
     "label-position": true,
     "max-line-length": [
       true,
@@ -65,14 +71,34 @@
     ],
     "no-misused-new": true,
     "no-non-null-assertion": true,
+    "no-return-await": true,
     "no-shadowed-variable": true,
     "no-string-literal": false,
     "no-string-throw": true,
+    "no-small-switch": true,
     "no-switch-case-fall-through": true,
     "no-trailing-whitespace": true,
     "no-unnecessary-initializer": true,
     "no-unused-expression": true,
     "no-var-keyword": true,
+    "no-misleading-array-reverse": true,
+    "no-accessor-field-mismatch": true,
+    "no-hardcoded-credentials": true,
+    "no-empty-destructuring": true,
+    "no-unused-array": true,
+    "prefer-promise-shorthand": true,
+    "no-unsafe-finally": true,
+    "new-parens": true,
+    "use-primitive-type": true,
+    "ban-types": true,
+    "no-multiline-string-literals": true,
+    "no-commented-code": true,
+    "no-useless-cast": true,
+    "no-ignored-return": true,
+    "max-union-size": true,
+    "no-duplicate-in-composite": true,
+    "prefer-for-of": true,
+    "no-redundant-boolean": true,
     "object-literal-sort-keys": false,
     "one-line": [
       true,
@@ -87,9 +113,32 @@
       "single"
     ],
     "radix": true,
+    "space-before-function-paren": [
+      true,
+      {
+        "anonymous": "always",
+        "named": "never",
+        "asyncArrow": "always",
+        "constructor": "never",
+        "method": "never"
+      }
+    ],
     "semicolon": [
       true,
       "always"
+    ],
+    "switch-default": true,
+    "trailing-comma": [
+      true,
+      {
+        "multiline": {
+          "objects": "always",
+          "arrays": "always",
+          "functions": "always",
+          "typeLiterals": "always"
+        },
+        "singleline": "never"
+      }
     ],
     "triple-equals": [
       true,
@@ -107,7 +156,12 @@
     ],
     "typeof-compare": true,
     "unified-signatures": true,
-    "variable-name": false,
+    "variable-name": [
+      true,
+      "check-format",
+      "allow-leading-underscore",
+      "ban-keywords"
+    ],
     "whitespace": [
       true,
       "check-branch",
@@ -137,6 +191,9 @@
     "use-pipe-transform-interface": true,
     "component-class-suffix": true,
     "directive-class-suffix": true,
-    "invoke-injectable": true
+    "invoke-injectable": true,
+    "type-literal-delimiter": true,
+    "prefer-on-push-component-change-detection": false,
+    "only-arrow-functions": false
   }
 }

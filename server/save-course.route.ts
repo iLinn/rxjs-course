@@ -13,7 +13,7 @@ export function saveCourse(req: Request, res: Response) {
 
     COURSES[id] = {
         ...COURSES[id],
-        ...changes
+        ...changes,
     };
 
     setTimeout(() => {

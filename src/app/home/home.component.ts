@@ -1,49 +1,72 @@
 import {Component, OnInit} from '@angular/core';
-import {Course} from "../model/course";
-import {interval, noop, Observable, of, throwError, timer} from 'rxjs';
-import {catchError, delay, delayWhen, finalize, map, retryWhen, shareReplay, tap} from 'rxjs/operators';
+import {
+  interval,
+  noop,
+  Observable,
+  of,
+  throwError,
+  timer,
+} from 'rxjs';
+import {
+  catchError,
+  delay,
+  delayWhen,
+  finalize,
+  map,
+  retryWhen,
+  shareReplay,
+  tap,
+} from 'rxjs/operators';
 import {createHttpObservable} from '../common/util';
+import {Course} from '../model/course';
 
+export enum COURSES_CATEGORY {
+  BEGINNER = 'BEGINNER',
+  ADVANCED = 'ADVANCED',
+}
+
+export enum API_URL {
+  COURSES = '/api/courses',
+}
 
 @Component({
-    selector: 'home',
+    selector: 'app-home',
     templateUrl: './home.component.html',
-    styleUrls: ['./home.component.css']
+    styleUrls: ['./home.component.css'],
 })
+
 export class HomeComponent implements OnInit {
-
     beginnerCourses$: Observable<Course[]>;
-
     advancedCourses$: Observable<Course[]>;
 
     ngOnInit() {
 
-        const http$ = createHttpObservable('/api/courses');
+      const http$ = createHttpObservable(API_URL.COURSES);
 
-        const courses$: Observable<Course[]> = http$
-            .pipe(
-                tap(() => console.log("HTTP request executed")),
-                map(res => Object.values(res["payload"]) ),
-                shareReplay(),
-                retryWhen(errors =>
-                    errors.pipe(
-                    delayWhen(() => timer(2000)
-                    )
-                ) )
-            );
+      const courses$ = http$
+        .pipe(
+          catchError(err => {
+            console.log(`ERROR OCCURED:`, err);
 
-        this.beginnerCourses$ = courses$
-            .pipe(
-                map(courses => courses
-                    .filter(course => course.category == 'BEGINNER'))
-            );
+            return throwError(err);
+          }), // move catchError as close as possible to avoid logic execution
+          finalize(() => {
+            console.log(`Finalize executed...`);
+          }),
+          tap(res => console.log('HTTP request:', res)),
+          map(res => Object.values(res?.payload)),
+          shareReplay(), // required to replay http request
+        );
 
-        this.advancedCourses$ = courses$
-            .pipe(
-                map(courses => courses
-                    .filter(course => course.category == 'ADVANCED'))
-            );
+      this.beginnerCourses$ = courses$
+        .pipe(
+          map(courses => courses.filter(course => course.category === COURSES_CATEGORY.BEGINNER)),
+        );
 
+      this.advancedCourses$ = courses$
+        .pipe(
+          map(courses => courses.filter(course => course.category === COURSES_CATEGORY.ADVANCED)),
+        );
     }
 
 }

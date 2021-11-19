@@ -1,17 +1,12 @@
 import {Component, OnInit} from '@angular/core';
 import {
-  interval,
-  noop,
   Observable,
-  of,
   throwError,
   timer,
 } from 'rxjs';
 import {
   catchError,
-  delay,
   delayWhen,
-  finalize,
   map,
   retryWhen,
   shareReplay,
@@ -25,6 +20,7 @@ export enum COURSES_CATEGORY {
   ADVANCED = 'ADVANCED',
 }
 
+// TODO: ref: provide url as const for whole app
 export enum API_URL {
   COURSES = '/api/courses',
 }
@@ -50,12 +46,15 @@ export class HomeComponent implements OnInit {
 
             return throwError(err);
           }), // move catchError as close as possible to avoid logic execution
-          finalize(() => {
-            console.log(`Finalize executed...`);
-          }),
+          // finalize(() => {
+          //   console.log(`Finalize executed...`);
+          // }),
           tap(res => console.log('HTTP request:', res)),
           map(res => Object.values(res?.payload)),
           shareReplay(), // required to replay http request
+          retryWhen(errors => errors.pipe(
+            delayWhen(() => timer(2000)),
+          )),
         );
 
       this.beginnerCourses$ = courses$

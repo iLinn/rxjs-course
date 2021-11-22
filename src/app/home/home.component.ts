@@ -12,18 +12,9 @@ import {
   shareReplay,
   tap,
 } from 'rxjs/operators';
+import { Store } from '../common/store.service';
 import {createHttpObservable} from '../common/util';
 import {Course} from '../model/course';
-
-export enum COURSES_CATEGORY {
-  BEGINNER = 'BEGINNER',
-  ADVANCED = 'ADVANCED',
-}
-
-// TODO: ref: provide url as const for whole app
-export enum API_URL {
-  COURSES = '/api/courses',
-}
 
 @Component({
     selector: 'app-home',
@@ -34,38 +25,20 @@ export enum API_URL {
 export class HomeComponent implements OnInit {
     beginnerCourses$: Observable<Course[]>;
     advancedCourses$: Observable<Course[]>;
+    intermedietCourses$: Observable<Course[]>;
+
+    constructor(private store: Store) {
+
+    }
 
     ngOnInit() {
+      const courses$ = this.store.courses$;
 
-      const http$ = createHttpObservable(API_URL.COURSES);
+      this.beginnerCourses$ = this.store.selectBeginnerCourses();
 
-      const courses$ = http$
-        .pipe(
-          catchError(err => {
-            console.log(`ERROR OCCURED:`, err);
+      this.advancedCourses$ = this.store.selectAdvancedCourses();
 
-            return throwError(err);
-          }), // move catchError as close as possible to avoid logic execution
-          // finalize(() => {
-          //   console.log(`Finalize executed...`);
-          // }),
-          tap(res => console.log('HTTP request:', res)),
-          map(res => Object.values(res?.payload)),
-          shareReplay(), // required to replay http request
-          retryWhen(errors => errors.pipe(
-            delayWhen(() => timer(2000)),
-          )),
-        );
-
-      this.beginnerCourses$ = courses$
-        .pipe(
-          map(courses => courses.filter(course => course.category === COURSES_CATEGORY.BEGINNER)),
-        );
-
-      this.advancedCourses$ = courses$
-        .pipe(
-          map(courses => courses.filter(course => course.category === COURSES_CATEGORY.ADVANCED)),
-        );
+      this.intermedietCourses$ = this.store.selectIntermediateCourses();
     }
 
 }

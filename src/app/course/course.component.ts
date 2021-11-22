@@ -7,21 +7,23 @@ import {
 } from '@angular/core';
 import {ActivatedRoute} from '@angular/router';
 import {
+  concat,
   fromEvent,
   Observable,
 } from 'rxjs';
 import {
-    debounceTime,
-    distinctUntilChanged,
-    map,
-    startWith,
-    switchMap,
+  debounceTime,
+  distinctUntilChanged,
+  map,
+  startWith,
+  switchMap,
 } from 'rxjs/operators';
 import {
   debug,
   RxJsLoggingLevel,
   setRxJsLoggingLevel,
 } from '../common/debug';
+import { Store } from '../common/store.service';
 import {
   createHttpObservable,
 } from '../common/util';
@@ -36,46 +38,50 @@ import { Lesson } from '../model/lesson';
 })
 export class CourseComponent implements OnInit, AfterViewInit {
 
-    courseId: string;
-    course$: Observable<Course>;
-    lessons$: Observable<Lesson[]>;
+    private courseId: number;
+
+    public course$: Observable<Course>;
+    public lessons$: Observable<Lesson[]>;
 
 
     @ViewChild('searchInput', { static: true }) input: ElementRef;
 
-    constructor(private route: ActivatedRoute) {
+    constructor(
+      private route: ActivatedRoute,
+      private store: Store,
+    ) {
 
     }
 
-    ngOnInit() {
+    public ngOnInit() {
 
         this.courseId = this.route.snapshot.params['id'];
 
-        this.course$ = createHttpObservable(`/api/courses/${this.courseId}`)
-            .pipe(
-                debug( RxJsLoggingLevel.INFO, 'COURSE VALUE '),
-            );
+        this.course$ = this.store.selectCourseById(this.courseId);
 
         setRxJsLoggingLevel(RxJsLoggingLevel.DEBUG);
+    }
+
+    public ngAfterViewInit() {
+
+      const searchLessons$ = fromEvent<any>(this.input.nativeElement, 'keyup')
+        .pipe(
+          map(event => event.target.value),
+          startWith(''), // init start value with empty search
+          debug( RxJsLoggingLevel.TRACE, 'SEARCH '),
+          debounceTime(400),
+          distinctUntilChanged(),
+          switchMap(search => this.loadLessons(search)),
+          debug( RxJsLoggingLevel.DEBUG, 'LESSONS VALUE '),
+      );
+
+      const initialLessons$ = this.loadLessons();
+
+      this.lessons$ = concat(initialLessons$, searchLessons$);
 
     }
 
-    ngAfterViewInit() {
-
-        this.lessons$ = fromEvent<any>(this.input.nativeElement, 'keyup')
-            .pipe(
-                map(event => event.target.value),
-                startWith(''), // init start value with empty search
-                debug( RxJsLoggingLevel.TRACE, 'SEARCH '),
-                debounceTime(400),
-                distinctUntilChanged(),
-                switchMap(search => this.loadLessons(search)),
-                debug( RxJsLoggingLevel.DEBUG, 'LESSONS VALUE '),
-            );
-
-    }
-
-    loadLessons(search = ''): Observable<Lesson[]> {
+    public loadLessons(search = ''): Observable<Lesson[]> {
       return createHttpObservable(
           `/api/lessons?courseId=${this.courseId}&pageSize=100&filter=${search}`)
           .pipe(

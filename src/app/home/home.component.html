@@ -7,6 +7,11 @@
                     [courses]="beginnerCourses$ | async">
             </app-courses-card-list>
         </mat-tab>
+        <mat-tab label="Intermediate">
+          <app-courses-card-list
+            [courses]="intermedietCourses$ | async">
+          </app-courses-card-list>
+        </mat-tab>
         <mat-tab label="Advanced">
             <app-courses-card-list
                     [courses]="advancedCourses$ | async"

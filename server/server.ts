@@ -1,5 +1,6 @@
 import * as express from 'express';
 import { Application } from 'express';
+import { SERVER_API_URL } from '../src/app/common/constants';
 import {
   getAllCourses,
   getCourseById,
@@ -10,12 +11,6 @@ import { searchLessons} from './search-lessons.route';
 const bodyParser = require('body-parser');
 
 const app: Application = express();
-
-export enum SERVER_API_URL {
-  COURSES = '/api/courses',
-  COURSES_ID = '/api/courses/:id',
-  LESSONS = '/api/lessons',
-}
 
 app.use(bodyParser.json());
 

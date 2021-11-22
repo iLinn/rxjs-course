@@ -1,3 +1,4 @@
+import { COURSES_CATEGORY } from '../common/constants';
 
 
 export interface Course {
@@ -6,6 +7,6 @@ export interface Course {
     iconUrl: string;
     courseListIcon: string;
     longDescription: string;
-    category: string;
+    category: COURSES_CATEGORY;
     lessonsCount: number;
 }

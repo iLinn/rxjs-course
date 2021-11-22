@@ -20,30 +20,30 @@ import { Course } from '../model/course';
     styleUrls: ['./about.component.css'],
 })
 export class AboutComponent implements OnInit, OnDestroy {
-  courses$: Observable<Course[]>;
-  private subscription: Subscription;
+  // courses$: Observable<Course[]>;
+  // private subscription: Subscription;
 
   constructor() {}
 
-  ngOnInit() {
+  public ngOnInit() {
 
-    const http$ = createHttpObservable('/api/courses');
+    // const http$ = createHttpObservable('/api/courses');
 
-    this.courses$ = http$
-      .pipe(
-        map(res => Object.values(res['payload'])),
-      );
+    // this.courses$ = http$
+    //   .pipe(
+    //     map(res => Object.values(res['payload'])),
+    //   );
 
 
-    this.subscription = this.courses$.subscribe(
-      courses => console.log(`LOGGED_TEXT:`, courses),
-      noop,
-      () => console.log(`COMPLETED`),
-    );
+    // this.subscription = this.courses$.subscribe(
+    //   courses => console.log(`LOGGED_TEXT:`, courses),
+    //   noop,
+    //   () => console.log(`COMPLETED`),
+    // );
   }
 
-  ngOnDestroy() {
-    this.subscription.unsubscribe();
+  public ngOnDestroy() {
+    // this.subscription.unsubscribe();
   }
 
 }

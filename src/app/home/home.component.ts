@@ -1,19 +1,9 @@
 import {Component, OnInit} from '@angular/core';
 import {
   Observable,
-  throwError,
-  timer,
 } from 'rxjs';
-import {
-  catchError,
-  delayWhen,
-  map,
-  retryWhen,
-  shareReplay,
-  tap,
-} from 'rxjs/operators';
+
 import { Store } from '../common/store.service';
-import {createHttpObservable} from '../common/util';
 import {Course} from '../model/course';
 
 @Component({
